@@ -1,0 +1,23 @@
+name: Deploy to Server
+
+on:
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        -   name: Deploy to server
+            uses: actions/checkout@v3
+
+        -   uses: appleboy/ssh-action@v1.0.0
+            with:
+                host: ${{secrets.HOST}}
+                username: ${{secrets.USERNAME}}
+                port: ${{secrets.PORT}}
+                key: ${{secrets.KEY}}
+                script: "cd /var/www/laravel-docker && ./update-server.sh"
