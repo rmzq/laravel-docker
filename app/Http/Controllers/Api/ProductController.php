@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::simplePaginate($request->input('perPage', 3));
+        $products = Product::simplePaginate($request->input('perPage', 15));
         return response()->json([
             'data' => $products
         ]);
