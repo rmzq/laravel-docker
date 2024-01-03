@@ -10,4 +10,4 @@ git pull &&\
 /bin/php8.1 artisan optimize &&\
 
 
-chown wwww-data:www-data -R .
+chown www-data:www-data -R .
