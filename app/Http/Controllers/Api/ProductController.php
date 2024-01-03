@@ -11,12 +11,16 @@ use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('jwt.verify');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $products = Product::simplePaginate($request->input('perPage', 15));
+        $products = Product::mine()->simplePaginate($request->input('perPage', 15));
         return response()->json([
             'data' => $products
         ]);
@@ -29,7 +33,7 @@ class ProductController extends Controller
     public function store(CreateProductRequest $request)
     {
         $request->validated();
-        $product = Product::create($request->all());
+        $product = Product::create(array_merge($request->all(), ['user_id' => auth()->user()->id]));
         return response()->json([
             'data' => $product
         ]);
@@ -41,7 +45,7 @@ class ProductController extends Controller
      */
     public function show(Request $request, mixed $id): JsonResponse
     {
-        $data = Product::find($id);
+        $data = Product::mine()->find($id);
         if (!$data) {
             return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
         }
@@ -54,7 +58,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, mixed $id): JsonResponse
     {
-        $data = Product::find($id);
+        $data = Product::mine()->find($id);
 
         if (!$data) {
             return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
@@ -74,7 +78,7 @@ class ProductController extends Controller
      */
     public function destroy(mixed $id): JsonResponse
     {
-        $data = Product::find($id);
+        $data = Product::mine()->find($id);
         if (!$data) {
             return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
         }
