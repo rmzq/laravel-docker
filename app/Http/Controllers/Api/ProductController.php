@@ -5,28 +5,22 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateProductRequest;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::simplePaginate(request()->input('perPage', 3));
+        $products = Product::simplePaginate($request->input('perPage', 3));
         return response()->json([
             'data' => $products
         ]);
 
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -45,32 +39,46 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Request $request, mixed $id): JsonResponse
     {
-        //
+        $data = Product::find($id);
+        if (!$data) {
+            return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+        return response()->json(['data' => $data]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, mixed $id): JsonResponse
     {
-        //
+        $data = Product::find($id);
+
+        if (!$data) {
+            return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $filtered = Arr::except($request->all(), ['created_at', 'updated_at']);
+        $data->update($filtered);
+        $data->refresh();
+
+        return response()->json(['data' => $data]);
+
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(mixed $id): JsonResponse
     {
-        //
+        $data = Product::find($id);
+        if (!$data) {
+            return response()->json(['message' => 'Data not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+        $data->delete();
+        return response()->json(['message' => 'Data deleted']);
     }
 }
