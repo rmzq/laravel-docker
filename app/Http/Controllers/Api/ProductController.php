@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::simplePaginate(request()->input('perPage', 3));
         return response()->json([
             'data' => $products
         ]);
@@ -34,7 +34,7 @@ class ProductController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
         $product = Product::create($request->all());
         return response()->json([
             'data' => $product
