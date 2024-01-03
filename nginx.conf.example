@@ -1,6 +1,6 @@
 server {
     listen 80;
-    root /var/www/laravel-docker/app/public;
+    root /var/www/laravel-docker/public;
     index index.php index.html;
     server_name be-product.romzi.online
 
